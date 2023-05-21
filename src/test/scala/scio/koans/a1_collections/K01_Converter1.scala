@@ -27,7 +27,7 @@ class K01_Converter1 extends JmhKoan {
   @Benchmark def baseline: ju.List[CharSequence] = uuids.map(_.asInstanceOf[CharSequence]).asJava
 
   // Hint: casting can be parameterized, i.e. `.asInstanceOf[M[T]]`
-  @Benchmark def v1: ju.List[CharSequence] = ???
+  @Benchmark def v1: ju.List[CharSequence] = uuids.asJava.asInstanceOf[ju.List[CharSequence]]
 
   verifyResults()
   verifySpeedup(Speedup.Times(500))
