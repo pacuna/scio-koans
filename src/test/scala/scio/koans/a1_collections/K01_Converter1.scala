@@ -10,7 +10,6 @@ import scala.collection.JavaConverters._
  * Convert a Scala `List[String]` to a Java `List[CharSequence]`.
  */
 class K01_Converter1 extends JmhKoan {
-  ImNotDone
 
   private val uuids: List[String] = List.fill(1000)(ju.UUID.randomUUID().toString)
 

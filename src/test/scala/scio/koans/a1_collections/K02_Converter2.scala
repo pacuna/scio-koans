@@ -10,7 +10,6 @@ import scala.collection.JavaConverters._
  * Convert a Java `List[CharSequence]` to a Scala `List[String]`.
  */
 class K02_Converter2 extends JmhKoan {
-  ImNotDone
 
   private val uuids: ju.List[CharSequence] = {
     val l = new ju.ArrayList[CharSequence]()
