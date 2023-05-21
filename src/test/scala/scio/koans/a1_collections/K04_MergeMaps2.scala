@@ -9,7 +9,6 @@ import scala.collection.mutable
  * Merge multiple `Map[String, Set[Int]]`s.
  */
 class K04_MergeMaps2 extends JmhKoan {
-  ImNotDone
 
   val map1: Map[String, Set[Int]] = Map(
     "a" -> (1 to 20).toSet,
@@ -46,7 +45,7 @@ class K04_MergeMaps2 extends JmhKoan {
   // Hint: if `k` exists in both `map1` and `map2`, value in `map2` wins
   @Benchmark def v1: Map[String, Set[Int]] =
     Seq(map1, map2, map3).reduce { (m1, m2) =>
-      m1 ++ ???
+      m1 ++ m2.map{ case (str, ints) => str -> (m1.getOrElse(str, Set.empty) ++ ints)}
     }
 
   // How much faster is this version?
@@ -54,7 +53,7 @@ class K04_MergeMaps2 extends JmhKoan {
     val map = mutable.Map.empty[String, Set[Int]]
     Seq(map1, map2, map3).foreach { m =>
       for ((k, v) <- m) {
-        ???
+        map(k) = map.getOrElse(k, Set.empty) ++ v
       }
     }
     map
