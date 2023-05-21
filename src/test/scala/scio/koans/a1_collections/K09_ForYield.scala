@@ -7,7 +7,6 @@ import scio.koans.shared._
  * Cartesian product of two lists.
  */
 class K09_ForYield extends JmhKoan {
-  ImNotDone
 
   val lhs: List[String] = (1 to 10000).map("lhs-" + _).toList
   val rhs: List[String] = (1 to 5).map("rhs-" + _).toList
@@ -27,7 +26,11 @@ class K09_ForYield extends JmhKoan {
    * - reduce the number of `++` concatenations
    * - output order does not matter as long as it produces the same set of tuples
    */
-  @Benchmark def v1: Set[(String, String)] = ???
+  @Benchmark def v1: Set[(String, String)] =
+    (for {
+      r <- lhs
+      l <- rhs
+    } yield (r, l)).toSet
 
   verifyResults()
   verifySpeedup(Speedup.Faster)
