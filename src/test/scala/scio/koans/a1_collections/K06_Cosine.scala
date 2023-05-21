@@ -7,7 +7,6 @@ import scio.koans.shared._
  * Compute the cosine similarity between 2 vectors.
  */
 class K06_Cosine extends JmhKoan {
-  ImNotDone
 
   val vec1: Array[Double] = (1 to 100).map(_.toDouble / 100).toArray
   val vec2: Array[Double] = (-100 to -1).map(_.toDouble / 100).toArray
@@ -22,7 +21,19 @@ class K06_Cosine extends JmhKoan {
     dotProd / (mag1 * mag2)
   }
 
-  @Benchmark def v1: Double = ???
+  @Benchmark def v1: Double = {
+    var i = 0
+    var dp = 0.0
+    var mag1 = 0.0
+    var mag2 = 0.0
+    while (i < vec1.length){
+      dp += vec1(i) * vec2(i)
+      mag1 += math.pow(vec1(i), 2)
+      mag2 += math.pow(vec2(i), 2)
+      i += 1
+    }
+    dp / (math.sqrt(mag1) * math.sqrt(mag2))
+  }
 
   verifyResults()
   verifySpeedup(Speedup.Times(100))
