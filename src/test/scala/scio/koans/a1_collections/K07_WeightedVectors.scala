@@ -9,7 +9,6 @@ import scala.collection.mutable
  * Element-wise sum of a collection vectors, each scaled with a weight.
  */
 class K07_WeightedVectors extends JmhKoan {
-  ImNotDone
 
   // 20 vectors of dimension 100.
   val vecs: Seq[(Array[Double], Double)] = (1 to 20).map { x =>
@@ -26,7 +25,11 @@ class K07_WeightedVectors extends JmhKoan {
   @Benchmark def v1: mutable.WrappedArray[Double] = {
     val sum = Array.fill(100)(0.0)
     for ((v, w) <- vecs) {
-      ???
+      var i = 0
+      while (i < 100){
+        sum(i) += v(i) * w
+        i += 1
+      }
     }
     sum
   }
