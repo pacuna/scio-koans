@@ -7,7 +7,6 @@ import scio.koans.shared._
  * Compute the dot product of 2 vectors using primitive arrays vs. generic collections
  */
 class K10_Arrays extends JmhKoan {
-  ImNotDone
 
   val seq1: Seq[Double] = (1 to 100).map(_.toDouble / 100)
   val seq2: Seq[Double] = (-100 to -1).map(_.toDouble / 100)
@@ -30,8 +29,8 @@ class K10_Arrays extends JmhKoan {
    *
    * - http://www.lyh.me/slides/primitives.html
    */
-  val array1: Array[Double] = null
-  val array2: Array[Double] = null
+  val array1: Array[Double] = (1 to 100).map(_.toDouble / 100).toArray
+  val array2: Array[Double] = (-100 to -1).map(_.toDouble / 100).toArray
 
   @Benchmark def v1: Double = {
     var dp = 0.0
