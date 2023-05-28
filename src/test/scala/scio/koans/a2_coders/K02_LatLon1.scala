@@ -6,21 +6,20 @@ import scio.koans.shared._
  * Fix the non-deterministic coder exception.
  */
 class K02_LatLon1 extends PipelineKoan {
-  ImNotDone
 
   import K02_LatLon1._
 
   val events: Seq[(LatLon, String)] = Seq(
-    (LatLon(34.5, -10.0), "a"),
-    (LatLon(67.8, 12.3), "b"),
-    (LatLon(67.8, 12.3), "c"),
-    (LatLon(-45.0, 3.14), "d")
+    (LatLon(3450, -1000), "a"),
+    (LatLon(6780, 1230), "b"),
+    (LatLon(6780, 1230), "c"),
+    (LatLon(-4500, 314), "d")
   )
 
   val expected: Seq[(LatLon, Set[String])] = Seq(
-    (LatLon(34.5, -10.0), Set("a")),
-    (LatLon(67.8, 12.3), Set("b", "c")),
-    (LatLon(-45.0, 3.14), Set("d"))
+    (LatLon(3450, -1000), Set("a")),
+    (LatLon(6780, 1230), Set("b", "c")),
+    (LatLon(-4500, 314), Set("d"))
   )
 
   "Snippet" should "work" in {
@@ -42,5 +41,5 @@ object K02_LatLon1 {
   // 1 minute = 60 seconds
   // https://en.wikipedia.org/wiki/Decimal_degrees#Precision
   // Hint: `Double` encoding is not deterministic but `Int` is
-  case class LatLon(lat: Double, lon: Double)
+  case class LatLon(lat: Int, lon: Int)
 }
