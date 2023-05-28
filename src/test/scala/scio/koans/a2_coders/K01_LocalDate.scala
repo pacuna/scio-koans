@@ -9,23 +9,22 @@ import scio.koans.shared._
  * Fix the `NullPointerException`.
  */
 class K01_LocalDate extends PipelineKoan {
-  ImNotDone
 
-  val events: Seq[(String, String)] = Seq(
-    ("2020-01-01", "a"),
-    ("2020-01-02", "a"),
-    ("2020-02-01", "b"),
-    ("2020-02-02", "c"),
-    ("2020-03-01", "c"),
-    ("2020-03-03", "d"),
-    ("BAD DATE", "x")
+  val events: Seq[(Option[String], String)] = Seq(
+    (Some("2020-01-01"), "a"),
+    (Some("2020-01-02"), "a"),
+    (Some("2020-02-01"), "b"),
+    (Some("2020-02-02"), "c"),
+    (Some("2020-03-01"), "c"),
+    (Some("2020-03-03"), "d"),
+    (Some("BAD DATE"), "x")
   )
 
-  val expected: Seq[((Int, Int), Set[String])] = Seq(
-    ((2020, 1), Set("a")),
-    ((2020, 2), Set("b", "c")),
-    ((2020, 3), Set("c", "d")),
-    (null, Set("x"))
+  val expected: Seq[(Option[(Int, Int)], Set[String])] = Seq(
+    (Some(2020, 1), Set("a")),
+    (Some(2020, 2), Set("b", "c")),
+    (Some(2020, 3), Set("c", "d")),
+    (None, Set("x"))
   )
 
   "Snippet" should "work" in {
@@ -37,10 +36,10 @@ class K01_LocalDate extends PipelineKoan {
         .map { case (dateStr, event) =>
           // Hint: avoid null by emitting something else in case of exception
           try {
-            val date = LocalDate.from(formatter.parse(dateStr))
-            ((date.getYear, date.getMonth.getValue), event)
+            val date = LocalDate.from(formatter.parse(dateStr.get))
+            (Some(date.getYear, date.getMonth.getValue), event)
           } catch {
-            case _: Throwable => (null, event)
+            case _: Throwable => (None, event)
           }
         }
         .groupByKey
