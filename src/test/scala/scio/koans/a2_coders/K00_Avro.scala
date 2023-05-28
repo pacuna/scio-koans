@@ -14,7 +14,6 @@ import scala.collection.mutable
  * Encode Avro specific and generic records.
  */
 class K00_Avro extends JmhKoan {
-  ImNotDone
 
   val specificRecord: Test = Test
     .newBuilder()
@@ -57,8 +56,9 @@ class K00_Avro extends JmhKoan {
 
   // FIXME: implement this efficiently
   // Hint: look at the compiler warning
-  val scioGeneric: Coder[GenericRecord] = Coder[GenericRecord]
+  val scioGeneric: Coder[GenericRecord] = Coder.avroGenericRecordCoder(Test.getClassSchema)
   val beamGeneric: beam.Coder[GenericRecord] = CoderMaterializer.beamWithDefault(scioGeneric)
+
 
   @Benchmark def generic: mutable.WrappedArray[Byte] =
     CoderUtils.encodeToByteArray(beamGeneric, genericRecord)
