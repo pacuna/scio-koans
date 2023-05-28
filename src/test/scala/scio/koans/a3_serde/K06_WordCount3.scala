@@ -11,7 +11,6 @@ import scala.collection.JavaConverters._
  * Fix the `NotSerializableException`.
  */
 class K06_WordCount3 extends PipelineKoan {
-  ImNotDone
 
   import K06_WordCount3._
 
@@ -20,7 +19,7 @@ class K06_WordCount3 extends PipelineKoan {
 
   "Snippet" should "work" in {
     runWithContext { sc =>
-      val tokenizer = new Tokenizer("[^a-zA-Z']+", Set("a"))
+      lazy val tokenizer = new Tokenizer("[^a-zA-Z']+", Set("a"))
 
       val output = sc
         .parallelize(input)
