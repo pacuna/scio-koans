@@ -9,7 +9,6 @@ import scala.collection.JavaConverters._
  * Convert a Scala `Seq[Int]` to Java `List[Integer]`.
  */
 class K11_Erasure extends JmhKoan {
-  ImNotDone
 
   val numbers: Seq[Int] = 1 to 100
 
@@ -28,7 +27,7 @@ class K11_Erasure extends JmhKoan {
   // Hint: `scala.Int` and `java.lang.Integer` are the same boxed integer when inside a generic
   // collection. Therefore `Seq[Int]` and `Seq[java.lang.Integer]` are binary compatible despite
   // the type mismatch.
-  @Benchmark def v1: Int = ???
+  @Benchmark def v1: Int = sum(numbers.asInstanceOf[Seq[java.lang.Integer]].asJava)
 
   verifyResults()
   verifySpeedup(Speedup.Times(3))
