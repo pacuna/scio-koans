@@ -11,7 +11,6 @@ import scala.collection.JavaConverters._
  * Serialize a simple object with non-serializable member.
  */
 class K02_AvroSchema extends Koan {
-  ImNotDone
 
   "K02a" should "be serializable" in {
     val obj = SerializableUtils.roundTrip(new K02a(" "))
