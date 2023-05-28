@@ -37,4 +37,7 @@ class K02a(val separator: String) extends Serializable {
 }
 
 // Hint: `Schema` is not serializable but `String` is
-class K02b(val schema: Schema) extends Serializable {}
+class K02b(s: Schema) extends Serializable {
+  val strSchema = s.toString
+  def schema: Schema = Schema.parse(strSchema)
+}
