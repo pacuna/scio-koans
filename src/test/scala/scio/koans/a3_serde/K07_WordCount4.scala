@@ -1,5 +1,6 @@
 package scio.koans.a3_serde
 
+import scio.koans.a3_serde.K07_WordCount4.expected
 import scio.koans.shared._
 
 /**
@@ -9,7 +10,6 @@ class K07_WordCount4 extends PipelineKoan {
   ImNotDone
 
   val input: Seq[String] = Seq("a b c", "b c d", "c d e")
-  val expected: Set[(String, Long)] = Set(("a", 1), ("b", 2), ("c", 3), ("d", 2), ("e", 1))
 
   "Snippet" should "work" in {
     runWithContext { sc =>
@@ -22,4 +22,8 @@ class K07_WordCount4 extends PipelineKoan {
       output should satisfy[(String, Long)](_.toSet == expected)
     }
   }
+}
+
+object K07_WordCount4 {
+  val expected: Set[(String, Long)] = Set(("a", 1), ("b", 2), ("c", 3), ("d", 2), ("e", 1))
 }
