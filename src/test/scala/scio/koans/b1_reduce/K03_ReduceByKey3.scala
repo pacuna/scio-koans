@@ -7,7 +7,6 @@ import scio.koans.shared._
  * Compute min and max values by key.
  */
 class K03_ReduceByKey3 extends TransformKoan {
-  ImNotDone
 
   type InT = SCollection[(String, Int)]
   type OutT = SCollection[(String, (Int, Int))]
