@@ -35,7 +35,7 @@ class K03_ReduceByKey3 extends TransformKoan {
   // Hint: `Seq(10).min = 10`, `Seq(10).max = 10`
   // How does this compare with `baseline` in terms of shuffle?
   test("v1") {
-    _.mapValues(v => ?:[(Int, Int)])
-      .reduceByKey(???)
+    _.mapValues(v => (v, v))
+      .reduceByKey((x, y) => (Math.min(x._1, x._2), Math.max(y._1, y._2)))
   }
 }
