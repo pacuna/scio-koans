@@ -1,17 +1,19 @@
 scio-koans
 ==========
 
-[![Build Status](https://img.shields.io/github/workflow/status/nevillelyh/scio-koans/CI)](https://github.com/nevillelyh/scio-koans/actions?query=workflow%3ACI)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/pacuna/scio-koans/ci.yml)](https://github.com/pacuna/scio-koans/actions?query=workflow%3ACI)
 [![GitHub license](https://img.shields.io/github/license/nevillelyh/scio-koans.svg)](./LICENSE)
 
 A collection of [Scio](https://github.com/spotify/scio) exercises inspired by [Ruby Koans](http://rubykoans.com/) and many others.
 
+> This is a fork of [nevillelyh/scio-koans](https://github.com/nevillelyh/scio-koans) updated to run on modern tooling: Java 21, sbt 1.10.7, Scala 2.12.20, and Scio 0.14.9.
+
 # Usage
 
-Clone the repository and start the [sbt](https://www.scala-sbt.org/) console. You need to use Java 8 for now.
+Clone the repository and start the [sbt](https://www.scala-sbt.org/) console. Java 21 is required.
 
 ```bash
-git clone https://github.com/nevillelyh/scio-koans.git
+git clone https://github.com/pacuna/scio-koans.git
 cd scio-koans
 sbt
 ```
