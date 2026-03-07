@@ -11,6 +11,8 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - name: Set up sbt
+        uses: sbt/setup-sbt@v1
       - name: Cache sbt
         uses: coursier/cache-action@v6
       - run: sbt scalafmtCheckAll scalafmtSbtCheck
@@ -24,6 +26,8 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - name: Set up sbt
+        uses: sbt/setup-sbt@v1
       - name: Cache sbt
         uses: coursier/cache-action@v6
       - run: |
@@ -39,6 +43,8 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - name: Set up sbt
+        uses: sbt/setup-sbt@v1
       - name: Cache sbt
         uses: coursier/cache-action@v6
       - run: sbt verifyKoans
