@@ -2,6 +2,7 @@ package scio.koans.a2_coders
 
 import scio.koans.avro.Test
 import scio.koans.shared._
+import com.spotify.scio.avro._
 import com.spotify.scio.coders._
 import org.apache.avro.generic.{GenericRecord, GenericRecordBuilder}
 import org.apache.beam.sdk.{coders => beam}
@@ -55,9 +56,9 @@ class K00_Avro extends JmhKoan {
   @Benchmark def baseline: mutable.WrappedArray[Byte] =
     CoderUtils.encodeToByteArray(beamSpecific, specificRecord)
 
-  // FIXME: implement this efficiently
-  // Hint: look at the compiler warning
-  val scioGeneric: Coder[GenericRecord] = Coder[GenericRecord]
+  // FIXME: implement this efficiently using the schema (Kryo fallback is ~25x larger)
+  // Hint: use Coder.avroGenericRecordCoder(schema)
+  val scioGeneric: Coder[GenericRecord] = Coder.kryo[GenericRecord]
   val beamGeneric: beam.Coder[GenericRecord] = CoderMaterializer.beamWithDefault(scioGeneric)
 
   @Benchmark def generic: mutable.WrappedArray[Byte] =

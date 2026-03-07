@@ -1,5 +1,6 @@
 package scio.koans.b1_reduce
 
+import com.spotify.scio.coders.Coder
 import com.spotify.scio.values.SCollection
 import com.twitter.algebird._
 import scio.koans.shared._
@@ -44,13 +45,13 @@ class K16_AggregateByKey2 extends TransformKoan {
   val sumA = Aggregator.fromMonoid[Int]
 
   // Lazy so the test class can be instantiated
-  lazy val minA: Aggregator[Int, _, Int] = ???
-  lazy val maxA: Aggregator[Int, _, Int] = ???
-  lazy val distinctCountA: Aggregator[Int, _, Int] = ???
+  lazy val minA: Aggregator[Int, Min[Int], Int] = ???
+  lazy val maxA: Aggregator[Int, Max[Int], Int] = ???
+  lazy val distinctCountA: Aggregator[Int, Set[Int], Int] = ???
 
   test("v1") { input =>
     // Joining aggregators
-    val multiAggregator: Aggregator[Int, _, Stats] =
+    val multiAggregator =
       countA
         .join(sumA)
         .join(minA)
@@ -65,7 +66,7 @@ class K16_AggregateByKey2 extends TransformKoan {
 
   test("v2") { input =>
     // Compose from multiple aggregators
-    val multiAggregator: Aggregator[Int, _, Stats] =
+    val multiAggregator =
       MultiAggregator(countA, sumA, minA, maxA, distinctCountA)
         .andThenPresent { c =>
           // FIXME: present `c` as `Stats`
@@ -76,5 +77,7 @@ class K16_AggregateByKey2 extends TransformKoan {
 }
 
 object K16_AggregateByKey2 {
+  implicit val minCoder: Coder[Min[Int]] = Coder.kryo[Min[Int]]
+  implicit val maxCoder: Coder[Max[Int]] = Coder.kryo[Max[Int]]
   case class Stats(count: Long, sum: Int, min: Int, max: Int, distinctCount: Int)
 }

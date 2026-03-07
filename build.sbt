@@ -1,8 +1,8 @@
 name := "scio-koans"
 description := "Scio Koans"
 
-val scioVersion = "0.10.4"
-val magnolifyVersion = "0.4.3"
+val scioVersion = "0.14.9"
+val magnolifyVersion = "0.7.0"
 val scalaTestVersion = "3.2.9"
 
 val allKoans = taskKey[Seq[(String, Boolean)]]("Show all Koans")
@@ -15,10 +15,10 @@ val Red = Some(scala.Console.RED)
 
 val commonSettings = Seq(
   organization := "me.lyh",
-  scalaVersion := "2.12.14",
-  crossScalaVersions := Seq("2.12.14"),
+  scalaVersion := "2.12.20",
+  crossScalaVersions := Seq("2.12.20"),
   scalacOptions ++= Seq(
-    "-target:jvm-1.8",
+    "-release:11",
     "-deprecation",
     "-feature",
     "-unchecked",
@@ -83,8 +83,10 @@ val root: Project = Project(
   commonSettings ++ jmhSettings,
   libraryDependencies ++= Seq(
     "com.spotify" %% "scio-core" % scioVersion,
+    "com.spotify" %% "scio-avro" % scioVersion,
     "com.spotify" %% "scio-test" % scioVersion % Test,
-    "com.spotify" %% "magnolify-cats" % magnolifyVersion
+    "com.spotify" %% "magnolify-cats" % magnolifyVersion,
+    "com.spotify" %% "magnolify-guava" % magnolifyVersion
   )
 ).enablePlugins(JmhPlugin)
 

@@ -5,6 +5,8 @@ import com.spotify.scio.values.SCollection
 import com.twitter.algebird._
 import scio.koans.shared._
 
+
+
 /**
  * Compute min, max, sum, count, mean, variance and standard deviation with Moments.
  */
@@ -78,7 +80,7 @@ class K18_Moments2 extends TransformKoan {
     val moments: Aggregator[Int, Moments, Moments] = ???
 
     // Compose from multiple aggregators
-    val multiAggregator: Aggregator[Int, _, Stats] = ???
+    val multiAggregator: Aggregator[Int, (Min[Int], Max[Int], Int, Moments), Stats] = ???
 
     input.aggregate(multiAggregator)
   }
@@ -86,6 +88,8 @@ class K18_Moments2 extends TransformKoan {
 
 object K18_Moments2 {
   implicit val momentsCoder: Coder[Moments] = Coder.kryo[Moments]
+  implicit val minCoder: Coder[Min[Int]] = Coder.kryo[Min[Int]]
+  implicit val maxCoder: Coder[Max[Int]] = Coder.kryo[Max[Int]]
 
   val input: Seq[Int] = 1 to 100
 

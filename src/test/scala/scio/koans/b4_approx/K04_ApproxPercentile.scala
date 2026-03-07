@@ -1,5 +1,6 @@
 package scio.koans.b4_approx
 
+import com.spotify.scio.coders.Coder
 import com.spotify.scio.values.SCollection
 import com.twitter.algebird._
 import scio.koans.shared._
@@ -40,17 +41,18 @@ class K04_ApproxPercentile extends TransformKoan {
   }
 
   test("v1") { input =>
-    val p25: Aggregator[Int, _, Bound] =
+    val p25: Aggregator[Int, QTree[Unit], Bound] =
       Aggregator
         .approximatePercentileBounds[Int](0.25)
         .andThenPresent(b => Bound(b.lower.lower, b.upper.upper))
-    val p50: Aggregator[Int, _, Bound] = ???
-    val p75: Aggregator[Int, _, Bound] = ???
+    val p50: Aggregator[Int, QTree[Unit], Bound] = ???
+    val p75: Aggregator[Int, QTree[Unit], Bound] = ???
     input.aggregate(MultiAggregator(p25, p50, p75))
   }
 }
 
 object K04_ApproxPercentile {
+  implicit val qtreeCoder: Coder[QTree[Unit]] = Coder.kryo[QTree[Unit]]
   case class Bound(lower: Double, upper: Double) {
     def contains(x: Int): Boolean = lower <= x && x <= upper
   }

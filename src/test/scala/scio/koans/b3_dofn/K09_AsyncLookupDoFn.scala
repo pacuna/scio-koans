@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import com.google.common.cache.{Cache, CacheBuilder}
 import com.spotify.scio.transforms.BaseAsyncLookupDoFn.CacheSupplier
-import com.spotify.scio.transforms.ScalaAsyncLookupDoFn
+import com.spotify.scio.transforms.{DoFnWithResource, ScalaAsyncLookupDoFn}
 import org.apache.beam.sdk.transforms.ParDo
 import scio.koans.shared._
 
@@ -60,15 +60,15 @@ class K09_AsyncLookupDoFn extends PipelineKoan {
 
 object K09_AsyncLookupDoFn {
   // Cache lookup results
-  val cacheSupplier: CacheSupplier[Int, String, java.lang.Integer] =
-    new CacheSupplier[Int, String, java.lang.Integer] {
-      override def createCache(): Cache[java.lang.Integer, String] =
-        CacheBuilder.newBuilder().build[java.lang.Integer, String]()
-
-      override def getKey(input: Int): java.lang.Integer = input
+  val cacheSupplier: CacheSupplier[Int, String] =
+    new CacheSupplier[Int, String] {
+      override def get(): Cache[Int, String] =
+        CacheBuilder.newBuilder().build[java.lang.Integer, String]().asInstanceOf[Cache[Int, String]]
     }
 
   class MyDoFn extends ScalaAsyncLookupDoFn[Int, String, Client](100, cacheSupplier) {
+
+    override def getResourceType: DoFnWithResource.ResourceType = ???
 
     override def asyncLookup(client: Client, input: Int): Future[String] = ???
 
