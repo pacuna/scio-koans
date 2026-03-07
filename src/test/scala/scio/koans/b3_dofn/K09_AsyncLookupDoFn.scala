@@ -63,7 +63,10 @@ object K09_AsyncLookupDoFn {
   val cacheSupplier: CacheSupplier[Int, String] =
     new CacheSupplier[Int, String] {
       override def get(): Cache[Int, String] =
-        CacheBuilder.newBuilder().build[java.lang.Integer, String]().asInstanceOf[Cache[Int, String]]
+        CacheBuilder
+          .newBuilder()
+          .build[java.lang.Integer, String]()
+          .asInstanceOf[Cache[Int, String]]
     }
 
   class MyDoFn extends ScalaAsyncLookupDoFn[Int, String, Client](100, cacheSupplier) {

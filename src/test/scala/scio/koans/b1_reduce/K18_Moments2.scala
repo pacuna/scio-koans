@@ -5,8 +5,6 @@ import com.spotify.scio.values.SCollection
 import com.twitter.algebird._
 import scio.koans.shared._
 
-
-
 /**
  * Compute min, max, sum, count, mean, variance and standard deviation with Moments.
  */
