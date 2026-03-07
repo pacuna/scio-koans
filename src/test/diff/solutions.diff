@@ -251,10 +251,10 @@ index c16ea35..f7881f6 100644
    verifyResults()
    verifySpeedup(Speedup.Faster)
 diff --git a/src/test/scala/scio/koans/a1_collections/K10_Arrays.scala b/src/test/scala/scio/koans/a1_collections/K10_Arrays.scala
-index 4450224..9a7dd86 100644
+index 78a31ff..b1f0c3c 100644
 --- a/src/test/scala/scio/koans/a1_collections/K10_Arrays.scala
 +++ b/src/test/scala/scio/koans/a1_collections/K10_Arrays.scala
-@@ -28,8 +28,8 @@ class K10_Arrays extends JmhKoan {
+@@ -30,8 +30,8 @@ class K10_Arrays extends JmhKoan {
     *
     * - http://www.lyh.me/slides/primitives.html
     */
@@ -266,7 +266,7 @@ index 4450224..9a7dd86 100644
    @Benchmark def v1: Double = {
      var dp = 0.0
 diff --git a/src/test/scala/scio/koans/a1_collections/K11_Erasure.scala b/src/test/scala/scio/koans/a1_collections/K11_Erasure.scala
-index 43f100c..a91710c 100644
+index a9cd976..9d64d5e 100644
 --- a/src/test/scala/scio/koans/a1_collections/K11_Erasure.scala
 +++ b/src/test/scala/scio/koans/a1_collections/K11_Erasure.scala
 @@ -9,8 +9,6 @@ import scala.collection.JavaConverters._
@@ -288,10 +288,10 @@ index 43f100c..a91710c 100644
    verifyResults()
    verifySpeedup(Speedup.Times(3))
 diff --git a/src/test/scala/scio/koans/a2_coders/K00_Avro.scala b/src/test/scala/scio/koans/a2_coders/K00_Avro.scala
-index 11b112c..19ce58a 100644
+index 211ac40..d85885d 100644
 --- a/src/test/scala/scio/koans/a2_coders/K00_Avro.scala
 +++ b/src/test/scala/scio/koans/a2_coders/K00_Avro.scala
-@@ -14,8 +14,6 @@ import scala.collection.mutable
+@@ -15,8 +15,6 @@ import scala.collection.mutable
   * Encode Avro specific and generic records.
   */
  class K00_Avro extends JmhKoan {
@@ -300,12 +300,18 @@ index 11b112c..19ce58a 100644
    val specificRecord: Test = Test
      .newBuilder()
      .setInt1(1)
-@@ -57,7 +55,7 @@ class K00_Avro extends JmhKoan {
+@@ -56,9 +54,11 @@ class K00_Avro extends JmhKoan {
+   @Benchmark def baseline: mutable.WrappedArray[Byte] =
+     CoderUtils.encodeToByteArray(beamSpecific, specificRecord)
  
-   // FIXME: implement this efficiently
-   // Hint: look at the compiler warning
--  val scioGeneric: Coder[GenericRecord] = Coder[GenericRecord]
-+  val scioGeneric: Coder[GenericRecord] = Coder.avroGenericRecordCoder(Test.getClassSchema)
+-  // FIXME: implement this efficiently using the schema (Kryo fallback is ~25x larger)
+-  // Hint: use Coder.avroGenericRecordCoder(schema)
+-  val scioGeneric: Coder[GenericRecord] = Coder.kryo[GenericRecord]
++  // FIXME: implement this efficiently
++  // Hint: look at the compiler warning
++  val scioGeneric: Coder[GenericRecord] = Coder.beam(
++    org.apache.beam.sdk.extensions.avro.coders.AvroCoder.of(classOf[GenericRecord], Test.getClassSchema)
++  )
    val beamGeneric: beam.Coder[GenericRecord] = CoderMaterializer.beamWithDefault(scioGeneric)
  
    @Benchmark def generic: mutable.WrappedArray[Byte] =
@@ -1032,10 +1038,10 @@ index 785e6b6..bcc7283 100644
      (min, max, distinctCount)
    }
 diff --git a/src/test/scala/scio/koans/b1_reduce/K16_AggregateByKey2.scala b/src/test/scala/scio/koans/b1_reduce/K16_AggregateByKey2.scala
-index 0ed2f6a..9ea8813 100644
+index 0864092..5c7d54b 100644
 --- a/src/test/scala/scio/koans/b1_reduce/K16_AggregateByKey2.scala
 +++ b/src/test/scala/scio/koans/b1_reduce/K16_AggregateByKey2.scala
-@@ -8,8 +8,6 @@ import scio.koans.shared._
+@@ -9,8 +9,6 @@ import scio.koans.shared._
   * Replace `foldByKey` with `aggregateByKey`.
   */
  class K16_AggregateByKey2 extends TransformKoan {
@@ -1044,20 +1050,20 @@ index 0ed2f6a..9ea8813 100644
    import K16_AggregateByKey2._
  
    type InT = SCollection[(String, Int)]
-@@ -44,9 +42,9 @@ class K16_AggregateByKey2 extends TransformKoan {
+@@ -45,9 +43,9 @@ class K16_AggregateByKey2 extends TransformKoan {
    val sumA = Aggregator.fromMonoid[Int]
  
    // Lazy so the test class can be instantiated
--  lazy val minA: Aggregator[Int, _, Int] = ???
--  lazy val maxA: Aggregator[Int, _, Int] = ???
--  lazy val distinctCountA: Aggregator[Int, _, Int] = ???
-+  lazy val minA: Aggregator[Int, _, Int] = Aggregator.min
-+  lazy val maxA: Aggregator[Int, _, Int] = Aggregator.max
-+  lazy val distinctCountA: Aggregator[Int, _, Int] = Aggregator.uniqueCount
+-  lazy val minA: Aggregator[Int, Min[Int], Int] = ???
+-  lazy val maxA: Aggregator[Int, Max[Int], Int] = ???
+-  lazy val distinctCountA: Aggregator[Int, Set[Int], Int] = ???
++  lazy val minA: Aggregator[Int, Int, Int] = Aggregator.min[Int]
++  lazy val maxA: Aggregator[Int, Int, Int] = Aggregator.max[Int]
++  lazy val distinctCountA: Aggregator[Int, Set[Int], Int] = Aggregator.uniqueCount
  
    test("v1") { input =>
      // Joining aggregators
-@@ -58,7 +56,7 @@ class K16_AggregateByKey2 extends TransformKoan {
+@@ -59,7 +57,7 @@ class K16_AggregateByKey2 extends TransformKoan {
          .join(distinctCountA)
          .andThenPresent { case ((((count, sum), min), max), distinctCount) =>
            // FIXME: present results as `Stats`
@@ -1066,7 +1072,7 @@ index 0ed2f6a..9ea8813 100644
          }
      input.aggregateByKey(multiAggregator)
    }
-@@ -69,7 +67,7 @@ class K16_AggregateByKey2 extends TransformKoan {
+@@ -70,7 +68,7 @@ class K16_AggregateByKey2 extends TransformKoan {
        MultiAggregator(countA, sumA, minA, maxA, distinctCountA)
          .andThenPresent { c =>
            // FIXME: present `c` as `Stats`
@@ -1076,10 +1082,10 @@ index 0ed2f6a..9ea8813 100644
      input.aggregateByKey(multiAggregator)
    }
 diff --git a/src/test/scala/scio/koans/b1_reduce/K17_Moments1.scala b/src/test/scala/scio/koans/b1_reduce/K17_Moments1.scala
-index e38b9e3..b91e293 100644
+index fbe94fd..82e076c 100644
 --- a/src/test/scala/scio/koans/b1_reduce/K17_Moments1.scala
 +++ b/src/test/scala/scio/koans/b1_reduce/K17_Moments1.scala
-@@ -8,8 +8,6 @@ import scio.koans.shared._
+@@ -9,8 +9,6 @@ import scio.koans.shared._
   * Compute count, mean, variance and standard deviation with Moments.
   */
  class K17_Moments1 extends TransformKoan {
@@ -1088,7 +1094,7 @@ index e38b9e3..b91e293 100644
    import K17_Moments1._
  
    type InT = SCollection[Int]
-@@ -57,15 +55,15 @@ class K17_Moments1 extends TransformKoan {
+@@ -58,15 +56,15 @@ class K17_Moments1 extends TransformKoan {
    test("v1") {
      // `Moments` can compute mean, count, variance, standard deviation, etc. in parallel.
      _.map(x => Moments(x)).sum // Algebird provides implicit `Semigroup[Moments]`
@@ -1108,10 +1114,10 @@ index e38b9e3..b91e293 100644
    }
  }
 diff --git a/src/test/scala/scio/koans/b1_reduce/K18_Moments2.scala b/src/test/scala/scio/koans/b1_reduce/K18_Moments2.scala
-index 2733312..9bed107 100644
+index 584bbed..bd3c3c0 100644
 --- a/src/test/scala/scio/koans/b1_reduce/K18_Moments2.scala
 +++ b/src/test/scala/scio/koans/b1_reduce/K18_Moments2.scala
-@@ -8,8 +8,6 @@ import scio.koans.shared._
+@@ -11,8 +11,6 @@ import scio.koans.shared._
   * Compute min, max, sum, count, mean, variance and standard deviation with Moments.
   */
  class K18_Moments2 extends TransformKoan {
@@ -1120,7 +1126,7 @@ index 2733312..9bed107 100644
    import K18_Moments2._
  
    type InT = SCollection[Int]
-@@ -66,7 +64,7 @@ class K18_Moments2 extends TransformKoan {
+@@ -69,7 +67,7 @@ class K18_Moments2 extends TransformKoan {
    test("v1") {
      _.map(x => (Min(x), Max(x), x, Moments(x))).sum
        .map { case (min, max, sum, m) =>
@@ -1129,7 +1135,7 @@ index 2733312..9bed107 100644
        }
    }
  
-@@ -74,10 +72,15 @@ class K18_Moments2 extends TransformKoan {
+@@ -77,10 +75,15 @@ class K18_Moments2 extends TransformKoan {
      val min = Aggregator.min[Int]
      val max = Aggregator.max[Int]
      val sum = Aggregator.fromMonoid[Int]
@@ -1138,8 +1144,8 @@ index 2733312..9bed107 100644
 +      MomentsAggregator.composePrepare((x: Int) => x.toDouble)
  
      // Compose from multiple aggregators
--    val multiAggregator: Aggregator[Int, _, Stats] = ???
-+    val multiAggregator: Aggregator[Int, _, Stats] =
+-    val multiAggregator: Aggregator[Int, (Min[Int], Max[Int], Int, Moments), Stats] = ???
++    val multiAggregator: Aggregator[Int, (Int, Int, Int, Moments), Stats] =
 +      MultiAggregator(min, max, sum, moments)
 +        .andThenPresent { case (min, max, sum, m) =>
 +          Stats(min, max, sum, m.count, m.mean, m.variance, m.stddev)
@@ -1733,7 +1739,7 @@ index ab0d530..ff9fb89 100644
  
    class Client {
 diff --git a/src/test/scala/scio/koans/b3_dofn/K09_AsyncLookupDoFn.scala b/src/test/scala/scio/koans/b3_dofn/K09_AsyncLookupDoFn.scala
-index 3aa02b3..2f28b3d 100644
+index 21c603b..6d37297 100644
 --- a/src/test/scala/scio/koans/b3_dofn/K09_AsyncLookupDoFn.scala
 +++ b/src/test/scala/scio/koans/b3_dofn/K09_AsyncLookupDoFn.scala
 @@ -15,8 +15,6 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutorService, Futu
@@ -1761,9 +1767,13 @@ index 3aa02b3..2f28b3d 100644
    }
  }
  
-@@ -70,9 +68,9 @@ object K09_AsyncLookupDoFn {
+@@ -68,11 +66,12 @@ object K09_AsyncLookupDoFn {
  
    class MyDoFn extends ScalaAsyncLookupDoFn[Int, String, Client](100, cacheSupplier) {
+ 
+-    override def getResourceType: DoFnWithResource.ResourceType = ???
++    override def getResourceType: DoFnWithResource.ResourceType =
++      DoFnWithResource.ResourceType.PER_INSTANCE
  
 -    override def asyncLookup(client: Client, input: Int): Future[String] = ???
 +    override def asyncLookup(client: Client, input: Int): Future[String] = client.request(input)
@@ -1880,10 +1890,10 @@ index 7ef3cd2..bbf5cde 100644
        }
    }
 diff --git a/src/test/scala/scio/koans/b4_approx/K04_ApproxPercentile.scala b/src/test/scala/scio/koans/b4_approx/K04_ApproxPercentile.scala
-index 05f3fff..d3b3f26 100644
+index 7d7e12e..25597b4 100644
 --- a/src/test/scala/scio/koans/b4_approx/K04_ApproxPercentile.scala
 +++ b/src/test/scala/scio/koans/b4_approx/K04_ApproxPercentile.scala
-@@ -8,8 +8,6 @@ import scio.koans.shared._
+@@ -9,8 +9,6 @@ import scio.koans.shared._
   * Compute approximate 25, 50 (median), and 75 percentile.
   */
  class K04_ApproxPercentile extends TransformKoan {
@@ -1892,17 +1902,17 @@ index 05f3fff..d3b3f26 100644
    import K04_ApproxPercentile._
  
    type InT = SCollection[Int]
-@@ -44,8 +42,14 @@ class K04_ApproxPercentile extends TransformKoan {
+@@ -45,8 +43,14 @@ class K04_ApproxPercentile extends TransformKoan {
        Aggregator
          .approximatePercentileBounds[Int](0.25)
          .andThenPresent(b => Bound(b.lower.lower, b.upper.upper))
--    val p50: Aggregator[Int, _, Bound] = ???
--    val p75: Aggregator[Int, _, Bound] = ???
-+    val p50: Aggregator[Int, _, Bound] =
+-    val p50: Aggregator[Int, QTree[Unit], Bound] = ???
+-    val p75: Aggregator[Int, QTree[Unit], Bound] = ???
++    val p50: Aggregator[Int, QTree[Unit], Bound] =
 +      Aggregator
 +        .approximatePercentileBounds[Int](0.50)
 +        .andThenPresent(b => Bound(b.lower.lower, b.upper.upper))
-+    val p75: Aggregator[Int, _, Bound] =
++    val p75: Aggregator[Int, QTree[Unit], Bound] =
 +      Aggregator
 +        .approximatePercentileBounds[Int](0.75)
 +        .andThenPresent(b => Bound(b.lower.lower, b.upper.upper))
